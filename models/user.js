@@ -1,7 +1,7 @@
 /** User class for message.ly */
 
 const db = require("../db");
-const bycrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const ExpressError = require("../expressError");
 
 const { BCRYPT_WORK_FACTOR } = require("../config");
@@ -36,6 +36,19 @@ class User {
 
   static async authenticate(username, password) {
     const result = await db.query(
+      `SELECT password
+      FROM users
+      WHERE username = $1`,
+      [username]);
+    let user = results.rows[0];
+
+    return user && await bcrypt.compare(password, user.password);
+  };
+
+  /** Update last_login_at for user */
+
+  static async updateLoginTimestamp(username) {
+    const result = await db.query(
       `UPDATE users
       SET last_login_at = current_timestamp
       WHERE username = $1
@@ -45,10 +58,6 @@ class User {
       throw new ExpressError(`No such user: ${username}`, 404);
     };
   };
-
-  /** Update last_login_at for user */
-
-  static async updateLoginTimestamp(username) { }
 
   /** All: basic info on all users:
    * [{username, first_name, last_name, phone}, ...] */
