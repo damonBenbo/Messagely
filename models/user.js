@@ -34,7 +34,17 @@ class User {
 
   /** Authenticate: is this username/password valid? Returns boolean. */
 
-  static async authenticate(username, password) { }
+  static async authenticate(username, password) {
+    const result = await db.query(
+      `UPDATE users
+      SET last_login_at = current_timestamp
+      WHERE username = $1
+      RETURNING username`,
+      [username]);
+    if (!result.rows[0]) {
+      throw new ExpressError(`No such user: ${username}`, 404);
+    };
+  };
 
   /** Update last_login_at for user */
 
