@@ -1,6 +1,10 @@
 /** User class for message.ly */
 
+const db = require("../db");
+const bycrypt = require("bcrypt");
+const ExpressError = require("../expressError");
 
+const { BCRYPT_WORK_FACTOR } = require("../config");
 
 /** User of the site. */
 
@@ -10,7 +14,7 @@ class User {
    *    {username, password, first_name, last_name, phone}
    */
 
-  static async register({username, password, first_name, last_name, phone}) { }
+  static async register({ username, password, first_name, last_name, phone }) { }
 
   /** Authenticate: is this username/password valid? Returns boolean. */
 
